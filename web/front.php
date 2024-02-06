@@ -4,20 +4,19 @@ require_once '../vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-const PAGE_PATH = __DIR__.'/../src/pages';
-
 $request = Request::createFromGlobals();
 $response = new Response();
 
 $map = [
-    '/hello' =>  PAGE_PATH.'/hello.php',
-    '/bye' => PAGE_PATH.'/bye.php'
+    '/hello' =>  'hello',
+    '/bye' => 'bye'
 ];
 
 $path = $request->getPathInfo();
 if(isset($map[$path])){
     ob_start();
-    include $map[$path];
+    extract($request->query->all(), EXTR_SKIP);
+    include sprintf(__DIR__.'/../src/pages/%s.php',$map[$path]);
     $response->setContent(ob_get_clean());
 }else{
     $response->setStatusCode(404);
